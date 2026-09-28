@@ -22,7 +22,7 @@ export class PubSub {
   private eventListeners: Array<(event: BrokerEvent) => void> = [];
 
   /** Registra um Subscriber em um tópico. */
-  subscribe(topic: Topic, subscriber: Subscriber): void {
+  subscribe(topic: Topic, subscriber: Subscriber, recordEvent = true): void {
     const subscribers = this.topics.get(topic) ?? [];
 
     if (subscribers.some((s) => s.id === subscriber.id)) {
@@ -30,7 +30,7 @@ export class PubSub {
     }
 
     this.topics.set(topic, [...subscribers, subscriber]);
-    this.emitEvent('SUBSCRIBE', subscriber.name, topic, 'Inscrição registrada');
+    if (recordEvent) this.emitEvent('SUBSCRIBE', subscriber.name, topic, 'Inscrição registrada');
   }
 
   /** Remove um Subscriber de um tópico. */
@@ -51,11 +51,16 @@ export class PubSub {
    */
   publish(topic: Topic, message: Message): void {
     const subscribers = this.topics.get(topic) ?? [];
-    this.emitEvent('PUBLISH', topic, `${subscribers.length} assinante(s)`, message.title);
+    const publicationName = {
+      live: 'Nova Live',
+      video: 'Novo Vídeo',
+      announcement: 'Comunicado',
+    }[message.type];
+    this.emitEvent('PUBLISH', message.channelName, publicationName, message.title);
 
     subscribers.forEach((subscriber) => {
       subscriber.onMessage(message);
-      this.emitEvent('DELIVERED', topic, subscriber.name, message.title);
+      this.emitEvent('DELIVERED', message.channelName, subscriber.name, message.title);
     });
   }
 

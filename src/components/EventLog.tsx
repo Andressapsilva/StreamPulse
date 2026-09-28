@@ -1,4 +1,5 @@
 import type { BrokerEvent } from '../types';
+import { channels } from '../data/channels';
 
 interface EventLogProps {
   events: BrokerEvent[];
@@ -6,6 +7,13 @@ interface EventLogProps {
 }
 
 export function EventLog({ events, onClear }: EventLogProps) {
+  function displayTarget(event: BrokerEvent): string {
+    if (event.action === 'SUBSCRIBE' || event.action === 'UNSUBSCRIBE') {
+      return channels.find((channel) => channel.id === event.to)?.name ?? event.to;
+    }
+    return event.to;
+  }
+
   return (
     <section className="panel">
       <header className="panel__header">
@@ -24,7 +32,7 @@ export function EventLog({ events, onClear }: EventLogProps) {
               <time className="event__time">{event.timestamp.toLocaleTimeString('pt-BR')}</time>
               <span className="event__action">{event.action}</span>
               <span className="event__flow">
-                {event.from} → {event.to}
+                {event.from} → {displayTarget(event)}
               </span>
               {event.detail && <span className="event__detail">{event.detail}</span>}
             </li>

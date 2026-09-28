@@ -26,17 +26,35 @@ npm install
 npm run dev
 ```
 
+## Contas locais de demonstração
+
+Todas as contas usam a senha `123456`:
+
+| Perfil | E-mail |
+| --- | --- |
+| Espectadora Ana | `ana@streampulse.com` |
+| Criador GamerPro | `gamerpro@streampulse.com` |
+| Criador TechWorld | `techworld@streampulse.com` |
+| Criador CinePlay | `cineplay@streampulse.com` |
+
+A autenticação é uma simulação local, sem backend. Sessão, inscrições, notificações e Event Log usam `localStorage`.
+
 ## Estrutura
 
 ```
 src/
   core/PubSub.ts            # Broker: subscribe, unsubscribe, publish
   data/channels.ts          # Canais fictícios (tópicos)
+  data/users.ts             # Contas fictícias locais
+  services/storage.ts       # Persistência da simulação no navegador
   types/index.ts            # Tipos compartilhados
   components/
     ChannelCard.tsx         # Card de canal + botão Seguir/Seguindo
-    NotificationList.tsx    # Notificações recebidas pelo Subscriber
-    CreatorPanel.tsx        # Publisher: publica no tópico
+    LoginPage.tsx           # Acesso local por perfil
+    Header.tsx              # Identidade da sessão e sino
+    NotificationCard.tsx    # Toast e item persistente
+    NotificationList.tsx    # Central de notificações
+    CreatorPanel.tsx        # Publisher: publica no próprio tópico
     EventLog.tsx            # Atividade do Broker em tempo real
   App.tsx
   main.tsx
@@ -44,14 +62,13 @@ src/
 
 ## Roteiro de apresentação
 
-1. Abrir a aplicação na visão **Usuário**.
-2. Seguir **GamerPro** → Broker registra `SUBSCRIBE`.
-3. Ir para a visão **Criador**, selecionar GamerPro, tipo `🔴 Nova Live`, título "Ranked Valorant até Imortal!" e publicar.
-4. Broker registra `PUBLISH` e `DELIVERED`.
-5. Voltar à visão Usuário: a notificação apareceu.
-6. Deixar de seguir GamerPro → `UNSUBSCRIBE`.
-7. Publicar novamente → o Event Log mostra `PUBLISH` com 0 assinantes e **nenhum** `DELIVERED`; o usuário não recebe a notificação.
+1. Entrar como `ana@streampulse.com` e seguir GamerPro. O broker registra `SUBSCRIBE`.
+2. Sair e entrar como `gamerpro@streampulse.com`; publicar uma Live com o título "Ranked Valorant até Imortal!".
+3. O broker registra `PUBLISH — GamerPro → Nova Live` e `DELIVERED — GamerPro → Ana`.
+4. Voltar para Ana: a notificação fica salva e aparece na central/sino.
+5. Deixar de seguir GamerPro e conferir `UNSUBSCRIBE`.
+6. Publicar novamente como GamerPro e voltar como Ana. A nova publicação não é entregue a ela.
 
 ## Escopo
 
-Sem backend, banco de dados, autenticação ou serviços externos. Toda a simulação roda no navegador.
+Sem backend, banco de dados ou serviços externos. O `localStorage` persiste a demonstração, mas a distribuição continua sendo decidida pelo Broker `PubSub.publish()` com base nas inscrições ativas em cada tópico.

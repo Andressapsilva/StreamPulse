@@ -1,40 +1,31 @@
-import { publicationTypes } from '../data/channels';
-import type { Message } from '../types';
+import type { NotificationItem } from '../types';
+import { NotificationCard } from './NotificationCard';
 
 interface NotificationListProps {
-  notifications: Message[];
-}
-
-function typeInfo(type: Message['type']) {
-  return publicationTypes.find((t) => t.value === type)!;
+  notifications: NotificationItem[];
 }
 
 export function NotificationList({ notifications }: NotificationListProps) {
   return (
-    <section className="panel">
-      <h2 className="panel__title">🔔 Notificações</h2>
+    <section className="notification-center-panel">
+      <header className="notification-center-panel__header">
+        <div>
+          <p className="login-eyebrow">CAIXA DE ENTRADA</p>
+          <h2 className="panel__title">Notificações</h2>
+        </div>
+        <span className="notification-center-panel__total">{notifications.length}</span>
+      </header>
 
       {notifications.length === 0 ? (
-        <p className="empty">
-          Nenhuma notificação. Siga um canal e publique algo no Painel do Criador.
-        </p>
+        <p className="empty">Nenhuma notificação recebida dos canais que você segue.</p>
       ) : (
-        <ul className="notification-list">
+        <div className="notification-list">
           {notifications.map((notification) => {
-            const info = typeInfo(notification.type);
             return (
-              <li key={notification.id} className="notification">
-                <strong className="notification__title">
-                  {info.icon} {notification.channelName} — {info.label}
-                </strong>
-                <span className="notification__body">{notification.title}</span>
-                <time className="notification__time">
-                  {notification.publishedAt.toLocaleTimeString('pt-BR')}
-                </time>
-              </li>
+              <NotificationCard key={notification.id} notification={notification} />
             );
           })}
-        </ul>
+        </div>
       )}
     </section>
   );

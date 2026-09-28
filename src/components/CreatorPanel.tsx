@@ -1,19 +1,17 @@
 import { useState, type FormEvent } from 'react';
-import { channels, publicationTypes } from '../data/channels';
+import { publicationTypes } from '../data/channels';
 import type { Channel, PublicationType } from '../types';
 
 interface CreatorPanelProps {
+  channel: Channel;
   onPublish: (channel: Channel, type: PublicationType, title: string) => void;
   subscriberCountOf: (topic: string) => number;
 }
 
-export function CreatorPanel({ onPublish, subscriberCountOf }: CreatorPanelProps) {
-  const [channelId, setChannelId] = useState(channels[0].id);
+export function CreatorPanel({ channel, onPublish, subscriberCountOf }: CreatorPanelProps) {
   const [type, setType] = useState<PublicationType>('live');
   const [title, setTitle] = useState('');
   const [feedback, setFeedback] = useState('');
-
-  const channel = channels.find((c) => c.id === channelId)!;
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -30,22 +28,18 @@ export function CreatorPanel({ onPublish, subscriberCountOf }: CreatorPanelProps
 
   return (
     <section className="panel">
-      <h2 className="panel__title">📡 Painel do Criador</h2>
+      <h2 className="panel__title">📡 Painel do Criador · {channel.name}</h2>
       <p className="panel__hint">
-        O criador publica no tópico e não sabe quem são os assinantes. Quem entrega é o Broker.
+        Seu canal é o tópico <code>{channel.id}</code>. O Broker distribui as publicações aos inscritos.
       </p>
 
       <form className="creator-form" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Canal (tópico)</span>
-          <select value={channelId} onChange={(e) => setChannelId(e.target.value)}>
-            {channels.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.icon} {c.name} — {c.category}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="creator-channel">
+          <span className="creator-channel__icon">{channel.icon}</span>
+          <span>{channel.name}</span>
+          <span className="creator-channel__category">{channel.category}</span>
+          <span className="badge">{subscriberCountOf(channel.id)} assinante(s)</span>
+        </div>
 
         <fieldset className="field">
           <legend>Tipo de publicação</legend>

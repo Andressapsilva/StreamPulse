@@ -13,6 +13,17 @@ export interface Channel {
 /** Tipos de publicação que um criador (Publisher) pode enviar. */
 export type PublicationType = 'live' | 'video' | 'announcement';
 
+export type UserRole = 'subscriber' | 'publisher';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  channelId?: Topic;
+}
+
 /** Mensagem entregue pelo Broker aos Subscribers de um tópico. */
 export interface Message {
   id: string;
@@ -21,6 +32,10 @@ export interface Message {
   type: PublicationType;
   title: string;
   publishedAt: Date;
+}
+
+export interface NotificationItem extends Message {
+  read: boolean;
 }
 
 /** Quem recebe as mensagens. O Publisher nunca conhece este objeto. */
