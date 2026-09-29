@@ -60,14 +60,6 @@ src/
   main.tsx
 ```
 
-## Roteiro de apresentação
-
-1. Entrar como `ana@streampulse.com` e seguir GamerPro. O broker registra `SUBSCRIBE`.
-2. Sair e entrar como `gamerpro@streampulse.com`; publicar uma Live com o título "Ranked Valorant até Imortal!".
-3. O broker registra `PUBLISH — GamerPro → Nova Live` e `DELIVERED — GamerPro → Ana`.
-4. Voltar para Ana: a notificação fica salva e aparece na central/sino.
-5. Deixar de seguir GamerPro e conferir `UNSUBSCRIBE`.
-6. Publicar novamente como GamerPro e voltar como Ana. A nova publicação não é entregue a ela.
 
 ## Escopo
 
